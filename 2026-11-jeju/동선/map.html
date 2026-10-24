@@ -52,6 +52,7 @@
   <h1 id="title">동선</h1>
   <div class="sub" id="subtitle"></div>
 </header>
+<nav class="tabs" id="plans"></nav>
 <nav class="tabs" id="tabs"></nav>
 <div class="layout">
   <div id="map"></div>
@@ -91,6 +92,8 @@ const baseReady = fetch('base.geojson').then(r => r.json()).then(geo => {
 
 const layers = {};
 let current = 'all';
+let currentPlan = null;
+let allDays = [];
 
 function directionsUrl(stops) {
   const pt = s => `${s.lat},${s.lng}`;
@@ -101,42 +104,73 @@ function directionsUrl(stops) {
   return 'https://www.google.com/maps/dir/?' + p.toString();
 }
 
+const planOf = day => day.plan || '기본';
+
 function show(id) {
   current = id;
   const bounds = [];
   for (const [key, layer] of Object.entries(layers)) {
-    const on = id === 'all' || id === key;
+    const day = allDays.find(d => d.id === key);
+    const on = planOf(day) === currentPlan && (id === 'all' || id === key);
     if (on) { layer.addTo(map); layer.eachLayer(l => l.getLatLng && bounds.push(l.getLatLng())); }
     else map.removeLayer(layer);
   }
-  document.querySelectorAll('.tab').forEach(t => {
+  document.querySelectorAll('#tabs .tab').forEach(t => {
     const on = t.dataset.id === id;
     t.classList.toggle('on', on);
     t.style.background = on ? (t.dataset.color || '#1d2433') : '';
   });
-  document.querySelectorAll('.day').forEach(d => d.style.display = (id === 'all' || d.dataset.id === id) ? '' : 'none');
+  document.querySelectorAll('.day').forEach(d => {
+    const day = allDays.find(x => x.id === d.dataset.id);
+    d.style.display = planOf(day) === currentPlan && (id === 'all' || d.dataset.id === id) ? '' : 'none';
+  });
   if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
 }
 
-Promise.all([fetch('route.json', { cache: 'no-store' }).then(r => r.json()), baseReady]).then(([data]) => {
-  document.getElementById('title').textContent = data.title;
-  document.getElementById('subtitle').textContent = data.subtitle || '';
-  document.getElementById('note').textContent = data.note || '';
-  document.title = data.title;
-
+// Day tabs belong to one plan (원안, 임시안, ...); switching plans rebuilds them.
+function showPlan(planId, dayId = 'all') {
+  currentPlan = planId;
+  document.querySelectorAll('#plans .tab').forEach(t => {
+    const on = t.dataset.id === planId;
+    t.classList.toggle('on', on);
+    t.style.background = on ? '#1d2433' : '';
+  });
   const tabs = document.getElementById('tabs');
+  tabs.innerHTML = '';
   const addTab = (id, text, color) => {
     const b = document.createElement('button');
     b.className = 'tab'; b.dataset.id = id; if (color) b.dataset.color = color;
     b.innerHTML = (color ? `<span class="dot" style="background:${color}"></span>` : '') + text;
-    b.onclick = () => show(id);
+    b.onclick = () => { show(id); history.replaceState(null, '', id === 'all' ? '#' + encodeURIComponent(planId) : '#' + id); };
     tabs.appendChild(b);
   };
   addTab('all', '전체');
+  allDays.filter(d => planOf(d) === planId).forEach(d => addTab(d.id, d.label, d.color));
+  show(dayId);
+}
+
+const dataUrl = 'route.json?t=' + Date.now(); // skip the Pages CDN cache so new routes show right away
+Promise.all([fetch(dataUrl, { cache: 'no-store' }).then(async r => [await r.json(), r.headers.get('last-modified')]), baseReady]).then(([[data, modified]]) => {
+  document.getElementById('title').textContent = data.title;
+  const when = modified ? new Date(modified).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  document.getElementById('subtitle').textContent = [data.subtitle, when && `갱신 ${when}`].filter(Boolean).join(' · ');
+  document.getElementById('note').textContent = data.note || '';
+  document.title = data.title;
+  allDays = data.days;
+
+  const planIds = [...new Set(data.days.map(planOf))];
+  const plansNav = document.getElementById('plans');
+  if (planIds.length > 1) {
+    for (const p of planIds) {
+      const b = document.createElement('button');
+      b.className = 'tab'; b.dataset.id = p; b.textContent = p;
+      b.onclick = () => { showPlan(p); history.replaceState(null, '', '#' + encodeURIComponent(p)); };
+      plansNav.appendChild(b);
+    }
+  } else plansNav.style.display = 'none';
 
   const list = document.getElementById('list');
   for (const day of data.days) {
-    addTab(day.id, day.label, day.color);
     const group = L.featureGroup();
     const latlngs = day.stops.map(s => [s.lat, s.lng]);
     // White casing under the colored route so it stands out on the green island.
@@ -162,7 +196,7 @@ Promise.all([fetch('route.json', { cache: 'no-store' }).then(r => r.json()), bas
       row.innerHTML = `<span class="num" style="background:${day.color}">${i + 1}</span>
         <span class="time">${s.time || ''}</span>
         <span>${s.name}${s.note ? `<div class="note">${s.note}</div>` : ''}</span>`;
-      row.onclick = () => { if (current !== 'all' && current !== day.id) show(day.id); map.setView([s.lat, s.lng], 13); };
+      row.onclick = () => { if (current !== 'all' && current !== day.id) show(day.id); map.setView([s.lat, s.lng], 13); scrollTo({ top: 0, behavior: 'smooth' }); };
       card.appendChild(row);
     });
     if (day.stops.length > 1) {
@@ -173,7 +207,11 @@ Promise.all([fetch('route.json', { cache: 'no-store' }).then(r => r.json()), bas
     }
     list.appendChild(card);
   }
-  show(location.hash ? location.hash.slice(1) : 'all');
+  // #t2 opens that day; #임시안 opens that plan; otherwise the default (or newest) plan.
+  const hash = decodeURIComponent(location.hash.slice(1));
+  const hashDay = data.days.find(d => d.id === hash);
+  if (hashDay) showPlan(planOf(hashDay), hashDay.id);
+  else showPlan(planIds.includes(hash) ? hash : (data.defaultPlan || planIds[planIds.length - 1]));
 });
 </script>
 </body>
