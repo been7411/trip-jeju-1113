@@ -41,6 +41,8 @@
   .go { display: inline-block; margin-top: 8px; font-size: 12px; text-decoration: none;
         padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); color: var(--text); }
   .foot { color: var(--muted); font-size: 12px; padding: 0 16px 24px; }
+  .leaflet-container { background: #e8f3fb; }
+  @media (prefers-color-scheme: dark) { .leaflet-container { background: #142231; } }
   .pin { width: 24px; height: 24px; border-radius: 50%; color: #fff; font: 700 11px/24px system-ui;
          text-align: center; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
 </style>
@@ -60,10 +62,29 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // Route data lives in route.json next to this page; 뭉탱이 edits only that file.
-const map = L.map('map', { zoomControl: true, scrollWheelZoom: false });
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 18, attribution: '&copy; OpenStreetMap'
-}).addTo(map);
+// The island base map is drawn from base.geojson (coastline + main roads) in an
+// illustrated style: green land, yellow roads, Hallasan in the middle.
+const map = L.map('map', { zoomControl: true, scrollWheelZoom: false, preferCanvas: true, zoomSnap: 0.25 });
+map.attributionControl.addAttribution('지도 데이터 &copy; OpenStreetMap, 통계청');
+
+function ellipse(lat, lng, rLat, rLng, n = 48) {
+  return Array.from({ length: n }, (_, i) => {
+    const t = (i / n) * Math.PI * 2;
+    return [lat + rLat * Math.sin(t), lng + rLng * Math.cos(t)];
+  });
+}
+
+const baseReady = fetch('base.geojson').then(r => r.json()).then(geo => {
+  const land = { type: 'FeatureCollection', features: geo.features.filter(f => f.properties.kind === 'land') };
+  const roads = { type: 'FeatureCollection', features: geo.features.filter(f => f.properties.kind === 'road') };
+  L.geoJSON(land, { interactive: false, style: { color: '#1c2a5c', weight: 3, fillColor: '#5bae4b', fillOpacity: 1 } }).addTo(map);
+  // Hallasan: layered greens around the summit, light crater lake.
+  const H = [33.3617, 126.5292];
+  [[0.085, 0.165, '#4f9f44'], [0.05, 0.095, '#428f3b'], [0.022, 0.04, '#337d33']].forEach(([a, b, c]) =>
+    L.polygon(ellipse(H[0], H[1], a, b), { interactive: false, stroke: false, fillColor: c, fillOpacity: 1 }).addTo(map));
+  L.polygon(ellipse(H[0], H[1], 0.006, 0.009), { interactive: false, color: '#2a6b2c', weight: 1.5, fillColor: '#eaf6d9', fillOpacity: 1 }).addTo(map);
+  L.geoJSON(roads, { interactive: false, style: { color: '#f2d34a', weight: 1.4, opacity: 0.95 } }).addTo(map);
+});
 
 const layers = {};
 let current = 'all';
@@ -94,7 +115,7 @@ function show(id) {
   if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
 }
 
-fetch('route.json', { cache: 'no-store' }).then(r => r.json()).then(data => {
+Promise.all([fetch('route.json', { cache: 'no-store' }).then(r => r.json()), baseReady]).then(([data]) => {
   document.getElementById('title').textContent = data.title;
   document.getElementById('subtitle').textContent = data.subtitle || '';
   document.getElementById('note').textContent = data.note || '';
@@ -115,7 +136,9 @@ fetch('route.json', { cache: 'no-store' }).then(r => r.json()).then(data => {
     addTab(day.id, day.label, day.color);
     const group = L.featureGroup();
     const latlngs = day.stops.map(s => [s.lat, s.lng]);
-    L.polyline(latlngs, { color: day.color, weight: 5, opacity: .85,
+    // White casing under the colored route so it stands out on the green island.
+    L.polyline(latlngs, { color: '#ffffff', weight: 9, opacity: .9, interactive: false }).addTo(group);
+    L.polyline(latlngs, { color: day.color, weight: 5, opacity: 1,
       dashArray: day.dashed ? '8 8' : null }).addTo(group);
     day.stops.forEach((s, i) => {
       const icon = L.divIcon({ className: '', iconSize: [24, 24],
