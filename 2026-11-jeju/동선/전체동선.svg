@@ -1,61 +1,74 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" font-family="'Malgun Gothic','Apple SD Gothic Neo',sans-serif">
-<rect width="1200" height="780" fill="#e8f3fa"/>
-<text x="600" y="40" text-anchor="middle" font-size="26" font-weight="bold" fill="#1d3557">제주 조이기 전체 동선 · 11/13(금) ~ 11/16(월)</text>
-<text x="600" y="64" text-anchor="middle" font-size="13" fill="#555">개략도예요. 위치·거리는 대략이고 정확한 시간은 지도 앱으로 확인 필요</text>
-<path d="M170,420 C170,330 300,270 430,262 C520,250 660,248 760,262 C880,275 1010,320 1040,395 C1050,440 990,480 900,500 C800,525 700,545 600,550 C480,555 340,540 250,500 C190,475 170,450 170,420 Z" fill="#f3efd9" stroke="#9bb7a0" stroke-width="3"/>
-<ellipse cx="600" cy="405" rx="70" ry="42" fill="#d9e6d0" stroke="#a9c3a0"/>
-<text x="600" y="400" text-anchor="middle" font-size="13" fill="#4a6b4a">한라산</text>
-<text x="600" y="416" text-anchor="middle" font-size="11" fill="#4a6b4a">백록담 1947m</text>
-<text x="600" y="610" text-anchor="middle" font-size="12" fill="#7a9bb0">남쪽 바다</text>
-<text x="600" y="235" text-anchor="middle" font-size="12" fill="#7a9bb0">북쪽 바다</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" font-family="'Malgun Gothic','Apple SD Gothic Neo',sans-serif">
+<rect width="1200" height="600" fill="#e8f3fa"/>
+<text x="600" y="38" text-anchor="middle" font-size="26" font-weight="bold" fill="#1d3557">제주 조이기 전체 동선 · 11/13(금) ~ 11/16(월)</text>
+<text x="600" y="60" text-anchor="middle" font-size="13" fill="#555">실제 위치를 기준으로 그린 개략도예요. 거리·시간은 대략이라 지도 앱으로 확인 필요</text>
+
+<polygon points="40,383 60,325 108,266 157,243 216,197 284,150 372,138 411,132 480,127 548,97 636,86 724,109 792,150 831,208 792,243 772,278 743,325 694,371 597,430 499,465 440,470 333,465 235,488 167,500 98,488 49,441" fill="#f3efd9" stroke="#9bb7a0" stroke-width="3" stroke-linejoin="round"/>
+<ellipse cx="430" cy="315" rx="80" ry="45" fill="#d9e6d0" stroke="#a9c3a0"/>
+<text x="430" y="312" text-anchor="middle" font-size="13" fill="#4a6b4a">한라산</text>
+<text x="430" y="329" text-anchor="middle" font-size="11" fill="#4a6b4a">백록담 1947m</text>
+<text x="440" y="123" text-anchor="middle" font-size="11" fill="#999">제주시</text>
+<text x="120" y="540" font-size="12" fill="#7a9bb0">남쪽 바다는 아래쪽 · 북쪽 바다는 위쪽</text>
 
 <g fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-<path d="M330,290 L420,272 L520,262 L610,262 L700,265 L790,285 L880,320 L920,365" stroke="#e76f51"/>
-<path d="M920,365 L930,395 L880,455 L800,495 L710,515 L640,525" stroke="#e76f51"/>
-<path d="M920,365 L935,398" stroke="#e76f51" stroke-dasharray="2,9"/>
-<path d="M640,525 L560,525 L480,520 L405,495 L300,440 L255,390 L250,340" stroke="#2a9d8f"/>
-<path d="M250,340 L290,305 L330,290" stroke="#2a9d8f" stroke-dasharray="10,8"/>
-<path d="M330,290 L520,262" stroke="#8d6bb8" stroke-width="3" stroke-dasharray="3,7"/>
-<path d="M640,525 L618,452" stroke="#457b9d" stroke-dasharray="10,6"/>
+<path d="M376,153 L548,111 L636,94 L670,96 L802,210 L772,278 L704,364 L577,429 L440,453" stroke="#e76f51"/>
+<path d="M802,210 L792,250 L704,364" stroke="#e76f51" stroke-width="3" stroke-dasharray="2,8"/>
+<path d="M440,453 L294,453 L196,476 L110,450 L74,345 L100,284" stroke="#2a9d8f"/>
+<path d="M100,284 L224,205 L402,173" stroke="#2a9d8f" stroke-dasharray="10,8"/>
+<path d="M402,173 L499,295" stroke="#457b9d" stroke-dasharray="10,6"/>
+<path d="M402,173 L376,153" stroke="#8d6bb8" stroke-width="3" stroke-dasharray="3,6"/>
 </g>
 
 <g font-size="13" fill="#222" font-weight="bold">
-<circle cx="330" cy="290" r="9" fill="#1d3557"/><text x="320" y="318" text-anchor="end">제주공항 ✈</text>
-<circle cx="420" cy="272" r="6" fill="#e76f51"/><text x="420" y="255" text-anchor="middle" font-weight="normal">애월</text>
-<circle cx="610" cy="262" r="7" fill="#e76f51"/><text x="610" y="246" text-anchor="middle">함덕</text>
-<circle cx="700" cy="265" r="7" fill="#e76f51"/><text x="700" y="249" text-anchor="middle">김녕</text>
-<circle cx="790" cy="285" r="7" fill="#e76f51"/><text x="790" y="270" text-anchor="middle">월정리</text>
-<circle cx="920" cy="365" r="8" fill="#e76f51"/><text x="932" y="352">성산 (2안 합류: 휘닉스 아일랜드)</text>
-<circle cx="935" cy="398" r="7" fill="#e76f51"/><text x="948" y="410">섭지코지</text>
-<circle cx="880" cy="455" r="7" fill="#e76f51"/><text x="895" y="470">표선</text>
-<circle cx="800" cy="495" r="7" fill="#e76f51"/><text x="800" y="523" text-anchor="middle" font-weight="normal">남원 큰엉</text>
-<circle cx="640" cy="525" r="10" fill="#c1121f"/><text x="640" y="553" text-anchor="middle">서귀포 🏠(13일 숙소)</text>
-<circle cx="560" cy="525" r="6" fill="#2a9d8f"/><text x="560" y="548" text-anchor="middle" font-weight="normal">중문</text>
-<circle cx="405" cy="495" r="7" fill="#2a9d8f"/><text x="405" y="520" text-anchor="middle">산방산·용머리</text>
-<circle cx="300" cy="440" r="6" fill="#2a9d8f"/><text x="285" y="462" text-anchor="end" font-weight="normal">신창풍차</text>
-<circle cx="250" cy="340" r="7" fill="#2a9d8f"/><text x="238" y="338" text-anchor="end">협재·금능</text>
-<circle cx="618" cy="452" r="8" fill="#457b9d"/><text x="630" y="470">성판악</text>
+<circle cx="376" cy="153" r="9" fill="#1d3557"/><text x="364" y="157" text-anchor="end">제주공항 ✈</text>
+<circle cx="402" cy="173" r="8" fill="#c1121f"/><text x="414" y="190">제주시 숙소 🏠 (14·15일, B안)</text>
+<circle cx="224" cy="205" r="6" fill="#2a9d8f"/><text x="212" y="194" text-anchor="end" font-weight="normal">애월</text>
+<circle cx="548" cy="111" r="7" fill="#e76f51"/><text x="548" y="130" text-anchor="middle">함덕</text>
+<circle cx="636" cy="94" r="7" fill="#e76f51"/><text x="636" y="114" text-anchor="middle">김녕</text>
+<circle cx="670" cy="96" r="7" fill="#e76f51"/><text x="680" y="80">월정리</text>
+<circle cx="802" cy="210" r="8" fill="#e76f51"/><text x="816" y="206">성산 (2안 합류)</text>
+<circle cx="792" cy="250" r="6" fill="#e76f51"/><text x="804" y="264" font-weight="normal">섭지코지 (2안)</text>
+<circle cx="704" cy="364" r="7" fill="#e76f51"/><text x="718" y="368">표선</text>
+<circle cx="577" cy="429" r="6" fill="#e76f51"/><text x="577" y="452" text-anchor="middle" font-weight="normal">남원 큰엉</text>
+<circle cx="440" cy="453" r="10" fill="#c1121f"/><text x="440" y="494" text-anchor="middle">서귀포 🏠 (13일 숙소)</text>
+<circle cx="294" cy="453" r="6" fill="#2a9d8f"/><text x="294" y="479" text-anchor="middle" font-weight="normal">중문</text>
+<circle cx="196" cy="476" r="7" fill="#2a9d8f"/><text x="196" y="516" text-anchor="middle">산방산·용머리</text>
+<circle cx="74" cy="345" r="6" fill="#2a9d8f"/><text x="62" y="349" text-anchor="end" font-weight="normal">신창풍차</text>
+<circle cx="100" cy="284" r="7" fill="#2a9d8f"/><text x="88" y="280" text-anchor="end">협재·금능</text>
+<circle cx="499" cy="295" r="8" fill="#457b9d"/><text x="512" y="299">성판악</text>
 </g>
 
 <g font-size="12" font-weight="bold" fill="#fff">
-<circle cx="700" cy="305" r="13" fill="#e76f51"/><text x="700" y="310" text-anchor="middle">1</text>
-<circle cx="480" cy="505" r="13" fill="#2a9d8f"/><text x="480" y="510" text-anchor="middle">2</text>
-<circle cx="640" cy="478" r="13" fill="#457b9d"/><text x="640" y="483" text-anchor="middle">3</text>
-<circle cx="380" cy="300" r="13" fill="#8d6bb8"/><text x="380" y="305" text-anchor="middle">4</text>
+<circle cx="736" cy="153" r="13" fill="#e76f51"/><text x="736" y="158" text-anchor="middle">1</text>
+<circle cx="245" cy="465" r="13" fill="#2a9d8f"/><text x="245" y="470" text-anchor="middle">2</text>
+<circle cx="450" cy="234" r="13" fill="#457b9d"/><text x="450" y="239" text-anchor="middle">3</text>
+<circle cx="340" cy="178" r="13" fill="#8d6bb8"/><text x="340" y="183" text-anchor="middle">4</text>
 </g>
 
-<rect x="30" y="600" width="1140" height="160" rx="10" fill="#fff" stroke="#c9d6df"/>
+<rect x="870" y="75" width="305" height="500" rx="10" fill="#fff" stroke="#c9d6df"/>
 <g font-size="13" fill="#222">
-<line x1="50" y1="628" x2="90" y2="628" stroke="#e76f51" stroke-width="5"/><text x="100" y="633" font-weight="bold">1일차 11/13 (금)</text>
-<text x="100" y="653">공항 → 함덕·김녕·월정리 → 성산·표선 → 서귀포 (1안, 시계 방향)</text>
-<text x="100" y="671">2안: 성산 합류 → 섭지코지 → 표선 → 남원 큰엉 → 서귀포</text>
-<line x1="50" y1="696" x2="90" y2="696" stroke="#2a9d8f" stroke-width="5"/><text x="100" y="701" font-weight="bold">2일차 11/14 (토)</text>
-<text x="100" y="721">서귀포 스쿠버 → 중문 → 산방산·용머리 → 신창풍차 → 협재·금능 노을 (이후 B안은 제주시로, 점선)</text>
-<line x1="640" y1="628" x2="680" y2="628" stroke="#457b9d" stroke-width="5" stroke-dasharray="10,6"/><text x="690" y="633" font-weight="bold">3일차 11/15 (일)</text>
-<text x="690" y="653">성판악 입산 05:00~11:30 · 백록담 왕복 7~9시간</text>
-<text x="690" y="671">(예약 필수, 공식 사이트 확인 필요)</text>
-<line x1="640" y1="696" x2="680" y2="696" stroke="#8d6bb8" stroke-width="3" stroke-dasharray="3,7"/><text x="690" y="701" font-weight="bold">4일차 11/16 (월)</text>
-<text x="690" y="721">렌터카 반납 08:30~09:00 → 제주공항 → 10시 전 대구행 ✈</text>
-<text x="50" y="748" fill="#777" font-size="12">숙소 추천 B안: 서귀포 1박(13) + 제주시 공항 근처 2박(14·15) · 숙소·일정 모두 확정 전</text>
+<line x1="885" y1="96" x2="920" y2="96" stroke="#e76f51" stroke-width="5"/><text x="930" y="101" font-weight="bold">1일차 11/13 (금)</text>
+<text x="885" y="124">1안: 공항 → 함덕 → 김녕 → 월정리</text>
+<text x="885" y="143">　　→ 성산 → 표선 → 서귀포</text>
+<text x="885" y="165">2안: 성산 합류 → 섭지코지 → 표선</text>
+<text x="885" y="184">　　→ 남원 큰엉 → 서귀포</text>
+
+<line x1="885" y1="218" x2="920" y2="218" stroke="#2a9d8f" stroke-width="5"/><text x="930" y="223" font-weight="bold">2일차 11/14 (토)</text>
+<text x="885" y="246">서귀포 스쿠버 → 중문 → 산방산</text>
+<text x="885" y="265">→ 신창풍차 → 협재·금능 노을</text>
+<text x="885" y="284">B안은 이후 제주시 숙소로 (점선)</text>
+
+<line x1="885" y1="318" x2="920" y2="318" stroke="#457b9d" stroke-width="5" stroke-dasharray="10,6"/><text x="930" y="323" font-weight="bold">3일차 11/15 (일)</text>
+<text x="885" y="346">성판악 입산 05:00~11:30</text>
+<text x="885" y="365">백록담 왕복 7~9시간</text>
+<text x="885" y="384">예약 필수, 공식 사이트 확인 필요</text>
+
+<line x1="885" y1="418" x2="920" y2="418" stroke="#8d6bb8" stroke-width="3" stroke-dasharray="3,6"/><text x="930" y="423" font-weight="bold">4일차 11/16 (월)</text>
+<text x="885" y="446">렌터카 반납 08:30~09:00</text>
+<text x="885" y="465">→ 제주공항 → 10시 전 대구행 ✈</text>
+
+<text x="885" y="510" fill="#777" font-size="12">숙소 B안(추천): 서귀포 1박(13)</text>
+<text x="885" y="528" fill="#777" font-size="12">+ 제주시 공항 근처 2박(14·15)</text>
+<text x="885" y="546" fill="#777" font-size="12">숙소·일정 모두 확정 전</text>
 </g>
 </svg>
