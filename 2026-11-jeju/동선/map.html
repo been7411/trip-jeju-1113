@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제주 동선</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2433; --muted: #6b7280; --line: #e5e7eb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #11151c; --card: #1a202b; --text: #e8ecf2; --muted: #9aa4b2; --line: #2a3240; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+  header { padding: 16px 16px 8px; }
+  h1 { margin: 0; font-size: 20px; }
+  .sub { margin-top: 4px; color: var(--muted); font-size: 13px; }
+  .tabs { display: flex; gap: 6px; padding: 8px 16px; overflow-x: auto; }
+  .tab { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--text);
+         border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+  .tab.on { color: #fff; border-color: transparent; }
+  .tab .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .layout { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 0 16px 24px; }
+  @media (min-width: 900px) { .layout { grid-template-columns: 1.6fr 1fr; } #map { height: 75vh !important; } }
+  #map { height: 55vh; border-radius: 14px; border: 1px solid var(--line); }
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .day { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+  .day h2 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .day .bar { width: 10px; height: 10px; border-radius: 3px; }
+  .day .meta { color: var(--muted); font-size: 12px; margin: 2px 0 8px; }
+  .stop { display: grid; grid-template-columns: 26px 46px 1fr; gap: 6px; align-items: start;
+          padding: 5px 0; border-top: 1px dashed var(--line); font-size: 13px; cursor: pointer; }
+  .stop:first-of-type { border-top: none; }
+  .num { width: 22px; height: 22px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700;
+         display: grid; place-items: center; }
+  .time { color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+  .note { color: var(--muted); font-size: 12px; }
+  .go { display: inline-block; margin-top: 8px; font-size: 12px; text-decoration: none;
+        padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); color: var(--text); }
+  .foot { color: var(--muted); font-size: 12px; padding: 0 16px 24px; }
+  .pin { width: 24px; height: 24px; border-radius: 50%; color: #fff; font: 700 11px/24px system-ui;
+         text-align: center; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">동선</h1>
+  <div class="sub" id="subtitle"></div>
+</header>
+<nav class="tabs" id="tabs"></nav>
+<div class="layout">
+  <div id="map"></div>
+  <div class="list" id="list"></div>
+</div>
+<div class="foot" id="note"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Route data lives in route.json next to this page; 뭉탱이 edits only that file.
+const map = L.map('map', { zoomControl: true, scrollWheelZoom: false });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18, attribution: '&copy; OpenStreetMap'
+}).addTo(map);
+
+const layers = {};
+let current = 'all';
+
+function directionsUrl(stops) {
+  const pt = s => `${s.lat},${s.lng}`;
+  const p = new URLSearchParams({ api: '1', travelmode: 'driving',
+    origin: pt(stops[0]), destination: pt(stops[stops.length - 1]) });
+  const mid = stops.slice(1, -1).map(pt);
+  if (mid.length) p.set('waypoints', mid.join('|'));
+  return 'https://www.google.com/maps/dir/?' + p.toString();
+}
+
+function show(id) {
+  current = id;
+  const bounds = [];
+  for (const [key, layer] of Object.entries(layers)) {
+    const on = id === 'all' || id === key;
+    if (on) { layer.addTo(map); layer.eachLayer(l => l.getLatLng && bounds.push(l.getLatLng())); }
+    else map.removeLayer(layer);
+  }
+  document.querySelectorAll('.tab').forEach(t => {
+    const on = t.dataset.id === id;
+    t.classList.toggle('on', on);
+    t.style.background = on ? (t.dataset.color || '#1d2433') : '';
+  });
+  document.querySelectorAll('.day').forEach(d => d.style.display = (id === 'all' || d.dataset.id === id) ? '' : 'none');
+  if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+}
+
+fetch('route.json', { cache: 'no-store' }).then(r => r.json()).then(data => {
+  document.getElementById('title').textContent = data.title;
+  document.getElementById('subtitle').textContent = data.subtitle || '';
+  document.getElementById('note').textContent = data.note || '';
+  document.title = data.title;
+
+  const tabs = document.getElementById('tabs');
+  const addTab = (id, text, color) => {
+    const b = document.createElement('button');
+    b.className = 'tab'; b.dataset.id = id; if (color) b.dataset.color = color;
+    b.innerHTML = (color ? `<span class="dot" style="background:${color}"></span>` : '') + text;
+    b.onclick = () => show(id);
+    tabs.appendChild(b);
+  };
+  addTab('all', '전체');
+
+  const list = document.getElementById('list');
+  for (const day of data.days) {
+    addTab(day.id, day.label, day.color);
+    const group = L.featureGroup();
+    const latlngs = day.stops.map(s => [s.lat, s.lng]);
+    L.polyline(latlngs, { color: day.color, weight: 5, opacity: .85,
+      dashArray: day.dashed ? '8 8' : null }).addTo(group);
+    day.stops.forEach((s, i) => {
+      const icon = L.divIcon({ className: '', iconSize: [24, 24],
+        html: `<div class="pin" style="background:${day.color}">${i + 1}</div>` });
+      L.marker([s.lat, s.lng], { icon })
+        .bindPopup(`<b>${day.label} · ${i + 1}. ${s.name}</b><br>${s.time || ''} ${s.note || ''}`)
+        .addTo(group);
+    });
+    layers[day.id] = group;
+
+    const card = document.createElement('section');
+    card.className = 'day'; card.dataset.id = day.id;
+    card.innerHTML = `<h2><span class="bar" style="background:${day.color}"></span>${day.label}</h2>
+      <div class="meta">${day.date} · ${day.summary || ''}</div>`;
+    day.stops.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 'stop';
+      row.innerHTML = `<span class="num" style="background:${day.color}">${i + 1}</span>
+        <span class="time">${s.time || ''}</span>
+        <span>${s.name}${s.note ? `<div class="note">${s.note}</div>` : ''}</span>`;
+      row.onclick = () => { if (current !== 'all' && current !== day.id) show(day.id); map.setView([s.lat, s.lng], 13); };
+      card.appendChild(row);
+    });
+    if (day.stops.length > 1) {
+      const a = document.createElement('a');
+      a.className = 'go'; a.href = directionsUrl(day.stops); a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = '구글 지도 길찾기 →';
+      card.appendChild(a);
+    }
+    list.appendChild(card);
+  }
+  show(location.hash ? location.hash.slice(1) : 'all');
+});
+</script>
+</body>
+</html>
