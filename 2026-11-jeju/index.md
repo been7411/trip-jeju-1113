@@ -9,6 +9,7 @@
 ## 동선
 
 - [map.html](동선/map.html)
+- [schedule.html](동선/schedule.html)
 
 ## 자료
 
